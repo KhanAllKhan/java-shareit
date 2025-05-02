@@ -37,23 +37,23 @@ public class InMemoryUserService implements UserService {
     public UserDto updateUser(Long userId, UserDto userDto) {
         User existingUser = users.get(userId);
         if (existingUser == null) {
-            throw new NotFoundException("Пользователь не найден");
+            throw new NotFoundException("User not found");
         }
 
-        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+
+        if (userDto.getName() != null && !userDto.getName().isBlank()) {
+            existingUser.setName(userDto.getName());
+        }
+
+        if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
             if (!userDto.getEmail().equals(existingUser.getEmail())) {
                 if (emailExists(userDto.getEmail(), userId)) {
-                    throw new DuplicateEmailException("Email уже используется");
+                    throw new DuplicateEmailException("Email already in use");
                 }
                 existingUser.setEmail(userDto.getEmail());
             }
         }
 
-        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
-            existingUser.setName(userDto.getName());
-        }
-
-        log.info("Обновлен пользователь с ID {}: {}", userId, existingUser);
         return UserMapper.toUserDto(existingUser);
     }
 

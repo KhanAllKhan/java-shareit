@@ -11,6 +11,7 @@ import ru.practicum.shareit.user.User;
 @RequiredArgsConstructor
 public class ItemMapper {
     private final UserService userService;
+    private final UserMapper userMapper; // Добавляем зависимость
 
     public ItemDto toItemDto(Item item) {
         return ItemDto.builder()
@@ -18,7 +19,7 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.isAvailable())
-                .owner(item.getOwner() != null ? UserMapper.toUserDto(item.getOwner()) : null)
+                .owner(item.getOwner() != null ? userMapper.toUserDto(item.getOwner()) : null)
                 .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
                 .build();
     }

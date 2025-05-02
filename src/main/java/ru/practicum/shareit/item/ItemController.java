@@ -20,9 +20,10 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@RequestBody ItemDto itemDto,
-                              @PathVariable Long itemId,
-                              @RequestHeader("X-Sharer-User-Id") Long ownerId) {
+    public ItemDto updateItem(
+            @RequestBody ItemDto itemDto,
+            @PathVariable Long itemId,
+            @RequestHeader("X-Sharer-User-Id") Long ownerId) {
         return itemService.updateItem(itemDto, itemId, ownerId);
     }
 
