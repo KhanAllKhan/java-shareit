@@ -66,29 +66,34 @@ public class InMemoryItemService implements ItemService {
     }
 
     @Override
-    public ItemDto updateItem(ItemDto itemDto, Long itemId, Long ownerId) {
+    public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
+        // 1. Проверка существования вещи
         Item existingItem = items.get(itemId);
         if (existingItem == null) {
             throw new NotFoundException("Вещь с ID " + itemId + " не найдена");
         }
 
+        // 2. Проверка прав владельца
         if (!existingItem.getOwner().getId().equals(ownerId)) {
             throw new NotFoundException("Только владелец может редактировать вещь");
         }
 
+        // 3. Частичное обновление полей
         if (itemDto.getName() != null) {
-            existingItem.setName(itemDto.getName());
+            existingItem.setName(itemDto.getName().trim());
         }
 
         if (itemDto.getDescription() != null) {
-            existingItem.setDescription(itemDto.getDescription());
+            existingItem.setDescription(itemDto.getDescription().trim());
         }
 
         if (itemDto.getAvailable() != null) {
             existingItem.setAvailable(itemDto.getAvailable());
         }
 
-        return itemMapper.toItemDto(existingItem);
+        log.info("Обновлена вещь ID {}: {}", itemId, existingItem);
+
+        return convertToDto(existingItem);
     }
 
     @Override
