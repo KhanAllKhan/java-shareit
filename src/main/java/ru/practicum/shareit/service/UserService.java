@@ -15,6 +15,6 @@ public interface UserService {
 
     void deleteUser(Long userId);
 
-    // Внутренний метод для получения полного объекта User (используется в других сервисах)
+
     User getUserEntity(Long userId);
 }
