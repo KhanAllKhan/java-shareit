@@ -40,14 +40,16 @@ public class InMemoryUserService implements UserService {
             throw new NotFoundException("Пользователь не найден");
         }
 
-        if (userDto.getEmail() != null && !userDto.getEmail().equals(existingUser.getEmail())) {
-            if (emailExists(userDto.getEmail(), userId)) {
-                throw new DuplicateEmailException("Email уже используется");
+        if (userDto.getEmail() != null && !userDto.getEmail().isEmpty()) {
+            if (!userDto.getEmail().equals(existingUser.getEmail())) {
+                if (emailExists(userDto.getEmail(), userId)) {
+                    throw new DuplicateEmailException("Email уже используется");
+                }
+                existingUser.setEmail(userDto.getEmail());
             }
-            existingUser.setEmail(userDto.getEmail());
         }
 
-        if (userDto.getName() != null) {
+        if (userDto.getName() != null && !userDto.getName().isEmpty()) {
             existingUser.setName(userDto.getName());
         }
 
