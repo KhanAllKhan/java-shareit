@@ -9,6 +9,7 @@ import ru.practicum.shareit.mapper.ItemMapper;
 import ru.practicum.shareit.user.User;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicLong;
@@ -78,14 +79,18 @@ public class InMemoryItemService implements ItemService {
     @Override
     public List<ItemDto> searchItems(String text) {
         if (text == null || text.isBlank()) {
-            return new ArrayList<>();
+            return Collections.emptyList();
         }
 
-        String searchText = text.toLowerCase();
+        String searchText = text.toLowerCase().trim();
+
         return items.values().stream()
-                .filter(Item::isAvailable)
-                .filter(item -> item.getName().toLowerCase().contains(searchText) ||
-                        item.getDescription().toLowerCase().contains(searchText))
+                .filter(Item::isAvailable) // Используем method reference
+                .filter(item -> {
+                    String name = item.getName() != null ? item.getName().toLowerCase() : "";
+                    String description = item.getDescription() != null ? item.getDescription().toLowerCase() : "";
+                    return name.contains(searchText) || description.contains(searchText);
+                })
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
