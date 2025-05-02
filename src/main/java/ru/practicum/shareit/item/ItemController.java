@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.service.ItemService;
@@ -30,11 +31,16 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(
-            @RequestBody ItemDto itemDto,
+    public ResponseEntity<ItemDto> updateItem(
             @PathVariable Long itemId,
+            @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        return itemService.updateItem(itemId, itemDto, ownerId);
+        try {
+            ItemDto updatedItem = itemService.updateItem(itemId, itemDto, ownerId);
+            return ResponseEntity.ok(updatedItem);
+        } catch (NotFoundException e) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
+        }
     }
 
     @GetMapping("/{itemId}")
