@@ -1,11 +1,14 @@
 package ru.practicum.shareit.service;
 
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.mapper.ItemMapper;
+import ru.practicum.shareit.mapper.UserMapper;
 import ru.practicum.shareit.user.User;
 
 
@@ -17,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class InMemoryItemService implements ItemService {
     private final ItemMapper itemMapper;
     private final UserService userService;
@@ -25,12 +29,40 @@ public class InMemoryItemService implements ItemService {
 
     @Override
     public ItemDto createItem(ItemDto itemDto, Long ownerId) {
-        User owner = userService.getUserEntity(ownerId);
-        Item item = itemMapper.toItem(itemDto);
+        if (itemDto == null) {
+            throw new ValidationException("Тело запроса не может быть пустым");
+        }
+        if (itemDto.getName() == null || itemDto.getName().isBlank()) {
+            throw new ValidationException("Название не может быть пустым");
+        }
+        if (itemDto.getDescription() == null || itemDto.getDescription().isBlank()) {
+            throw new ValidationException("Описание не может быть пустым");
+        }
+        if (itemDto.getAvailable() == null) {
+            throw new ValidationException("Статус доступности обязателен");
+        }
+
+        User owner;
+        try {
+            owner = userService.getUserEntity(ownerId);
+        } catch (NotFoundException e) {
+            throw new NotFoundException("Владелец с ID " + ownerId + " не найден");
+        }
+
+        // Создание и сохранение вещи
+        Item item = Item.builder()
+                .name(itemDto.getName().trim())
+                .description(itemDto.getDescription().trim())
+                .available(itemDto.getAvailable())
+                .owner(owner)
+                .build();
+
+
         item.setId(idCounter.getAndIncrement());
-        item.setOwner(owner);
         items.put(item.getId(), item);
-        return itemMapper.toItemDto(item);
+
+        log.info("Создана новая вещь: {}", item);
+        return convertToDto(item);
     }
 
     @Override
@@ -93,5 +125,16 @@ public class InMemoryItemService implements ItemService {
                 })
                 .map(itemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    private ItemDto convertToDto(Item item) {
+        return ItemDto.builder()
+                .id(item.getId())
+                .name(item.getName())
+                .description(item.getDescription())
+                .available(item.isAvailable())
+                .owner(UserMapper.toUserDto(item.getOwner()))
+                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+                .build();
     }
 }
