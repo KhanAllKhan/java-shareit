@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.service.UserService;
 import ru.practicum.shareit.user.dto.UserDto;
 
@@ -23,9 +25,15 @@ public class UserController {
     }
 
     @PatchMapping("/{userId}")
-    public UserDto updateUser(@RequestBody UserDto userDto,
-                              @PathVariable Long userId) {
-        return userService.updateUser(userDto, userId);
+    public ResponseEntity<UserDto> updateUser(
+            @PathVariable Long userId,
+            @Valid @RequestBody UserDto userDto) {
+        try {
+            UserDto updatedUser = userService.updateUser(userId, userDto);
+            return ResponseEntity.ok(updatedUser);
+        } catch (DuplicateEmailException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
+        }
     }
 
     @GetMapping("/{userId}")

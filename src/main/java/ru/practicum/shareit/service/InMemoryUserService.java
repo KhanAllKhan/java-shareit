@@ -2,6 +2,7 @@ package ru.practicum.shareit.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.mapper.UserMapper;
 import ru.practicum.shareit.user.User;
@@ -21,6 +22,10 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
+        if (emailExists(userDto.getEmail(), null)) {
+            throw new DuplicateEmailException("Email уже используется");
+        }
+
         User user = UserMapper.toUser(userDto);
         user.setId(idCounter.getAndIncrement());
         users.put(user.getId(), user);
@@ -29,22 +34,31 @@ public class InMemoryUserService implements UserService {
     }
 
     @Override
-    public UserDto updateUser(UserDto userDto, Long userId) {
+    public UserDto updateUser(Long userId, UserDto userDto) {
         User existingUser = users.get(userId);
         if (existingUser == null) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
+            throw new NotFoundException("Пользователь не найден");
+        }
+
+        if (userDto.getEmail() != null && !userDto.getEmail().equals(existingUser.getEmail())) {
+            if (emailExists(userDto.getEmail(), userId)) {
+                throw new DuplicateEmailException("Email уже используется");
+            }
+            existingUser.setEmail(userDto.getEmail());
         }
 
         if (userDto.getName() != null) {
             existingUser.setName(userDto.getName());
         }
 
-        if (userDto.getEmail() != null) {
-            existingUser.setEmail(userDto.getEmail());
-        }
-
         log.info("Обновлен пользователь с ID {}: {}", userId, existingUser);
         return UserMapper.toUserDto(existingUser);
+    }
+
+    private boolean emailExists(String email, Long excludeUserId) {
+        return users.values().stream()
+                .anyMatch(u -> u.getEmail().equals(email) &&
+                        (excludeUserId == null || !u.getId().equals(excludeUserId)));
     }
 
     @Override

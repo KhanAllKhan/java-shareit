@@ -12,7 +12,7 @@ public class UserDto {
     @NotBlank(message = "Имя не может быть пустым")
     private String name;
     @NotBlank(message = "Email не может быть пустым ")
-    @Email(message = "Email should be valid")
+    @Email(message = "Email должен быть валидным")
     private String email;
 }
 

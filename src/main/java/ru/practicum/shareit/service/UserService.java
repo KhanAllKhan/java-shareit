@@ -7,7 +7,7 @@ import java.util.List;
 public interface UserService {
     UserDto createUser(UserDto userDto);
 
-    UserDto updateUser(UserDto userDto, Long userId);
+    UserDto updateUser(Long userId, UserDto userDto);;
 
     UserDto getUserById(Long userId);
 
@@ -17,4 +17,5 @@ public interface UserService {
 
 
     User getUserEntity(Long userId);
+
 }
