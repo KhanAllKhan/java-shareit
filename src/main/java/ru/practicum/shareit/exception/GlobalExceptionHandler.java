@@ -21,11 +21,13 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining(", "));
         return new ErrorResponse(errorMessage);
     }
+
     @ExceptionHandler(DuplicateEmailException.class)
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleDuplicateEmail(DuplicateEmailException ex) {
         return new ErrorResponse(ex.getMessage());
     }
 
-    record ErrorResponse(String error) {}
+    record ErrorResponse(String error) {
+    }
 }
