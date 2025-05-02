@@ -1,14 +1,13 @@
-package ru.practicum.shareit.user;
+package ru.practicum.shareit.user.dto;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-@NotNull
 @Data
 @Builder
-public class User {
+public class UserDto {
     private Long id;
     private String name;
     private String email;
 }
+
