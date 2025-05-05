@@ -12,64 +12,45 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @Slf4j
 public class InMemoryUserService implements UserService {
     private final Map<Long, User> users = new HashMap<>();
-    private final AtomicLong idCounter = new AtomicLong(1);
+    private long idCounter = 1;
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        if (emailExists(userDto.getEmail(), null)) {
-            throw new DuplicateEmailException("Email уже используется");
-        }
+        checkEmailUniqueness(userDto.getEmail(), null);
 
         User user = UserMapper.toUser(userDto);
-        user.setId(idCounter.getAndIncrement());
+        user.setId(idCounter++);
         users.put(user.getId(), user);
-        log.info("Создан новый пользователь: {}", user);
+
+        log.info("Created user: ID={}, Email={}", user.getId(), user.getEmail());
         return UserMapper.toUserDto(user);
     }
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
-        User existingUser = users.get(userId);
-        if (existingUser == null) {
-            throw new NotFoundException("User not found");
-        }
-
+        User existingUser = getUserOrThrow(userId);
 
         if (userDto.getName() != null && !userDto.getName().isBlank()) {
             existingUser.setName(userDto.getName());
         }
 
         if (userDto.getEmail() != null && !userDto.getEmail().isBlank()) {
-            if (!userDto.getEmail().equals(existingUser.getEmail())) {
-                if (emailExists(userDto.getEmail(), userId)) {
-                    throw new DuplicateEmailException("Email already in use");
-                }
-                existingUser.setEmail(userDto.getEmail());
-            }
+            checkEmailUniqueness(userDto.getEmail(), userId);
+            existingUser.setEmail(userDto.getEmail());
         }
 
+        log.info("Updated user: ID={}", userId);
         return UserMapper.toUserDto(existingUser);
-    }
-
-    private boolean emailExists(String email, Long excludeUserId) {
-        return users.values().stream()
-                .anyMatch(u -> u.getEmail().equals(email) &&
-                        (excludeUserId == null || !u.getId().equals(excludeUserId)));
     }
 
     @Override
     public UserDto getUserById(Long userId) {
-        User user = users.get(userId);
-        if (user == null) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
-        }
-        return UserMapper.toUserDto(user);
+        return UserMapper.toUserDto(getUserOrThrow(userId));
     }
 
     @Override
@@ -81,19 +62,33 @@ public class InMemoryUserService implements UserService {
 
     @Override
     public void deleteUser(Long userId) {
-        if (!users.containsKey(userId)) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
+        if (users.remove(userId) == null) {
+            throw new NotFoundException("User with ID " + userId + " not found");
         }
-        users.remove(userId);
-        log.info("Удален пользователь с ID: {}", userId);
+        log.info("Deleted user: ID={}", userId);
     }
 
     @Override
     public User getUserEntity(Long userId) {
+        return getUserOrThrow(userId);
+    }
+
+    private User getUserOrThrow(Long userId) {
         User user = users.get(userId);
         if (user == null) {
-            throw new NotFoundException("Пользователь с ID " + userId + " не найден");
+            throw new NotFoundException("User with ID " + userId + " not found");
         }
         return user;
+    }
+
+    private void checkEmailUniqueness(String email, Long excludeUserId) {
+        if (email == null) return;
+
+        for (User user : users.values()) {
+            if (user.getEmail().equalsIgnoreCase(email) &&
+                    (excludeUserId == null || !user.getId().equals(excludeUserId))) {
+                throw new DuplicateEmailException("Email '" + email + "' already in use");
+            }
+        }
     }
 }

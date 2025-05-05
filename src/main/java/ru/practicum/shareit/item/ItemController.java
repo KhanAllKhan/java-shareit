@@ -3,10 +3,7 @@ package ru.practicum.shareit.item;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
-import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.service.ItemService;
 
@@ -19,28 +16,19 @@ public class ItemController {
     private final ItemService itemService;
 
     @PostMapping
-    public ResponseEntity<?> createItem(
+    @ResponseStatus(HttpStatus.CREATED)
+    public ItemDto createItem(
             @Valid @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        try {
-            ItemDto createdItem = itemService.createItem(itemDto, ownerId);
-            return ResponseEntity.status(HttpStatus.CREATED).body(createdItem);
-        } catch (NotFoundException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
-        }
+        return itemService.createItem(itemDto, ownerId);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<ItemDto> updateItem(
+    public ItemDto updateItem(
             @PathVariable Long itemId,
             @RequestBody ItemDto itemDto,
             @RequestHeader("X-Sharer-User-Id") Long ownerId) {
-        try {
-            ItemDto updatedItem = itemService.updateItem(itemId, itemDto, ownerId);
-            return ResponseEntity.ok(updatedItem);
-        } catch (NotFoundException e) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, e.getMessage());
-        }
+        return itemService.updateItem(itemId, itemDto, ownerId);
     }
 
     @GetMapping("/{itemId}")

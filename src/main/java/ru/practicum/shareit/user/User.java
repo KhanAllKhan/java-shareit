@@ -1,10 +1,9 @@
 package ru.practicum.shareit.user;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 
-@NotNull
+
 @Data
 @Builder
 public class User {
