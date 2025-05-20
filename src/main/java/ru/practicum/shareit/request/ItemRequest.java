@@ -2,7 +2,6 @@ package ru.practicum.shareit.request;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.sql.results.graph.Fetch;
 import ru.practicum.shareit.user.User;
 
 import java.time.LocalDateTime;

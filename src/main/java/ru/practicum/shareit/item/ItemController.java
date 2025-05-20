@@ -46,6 +46,7 @@ public class ItemController {
     public List<ItemDto> searchItems(@RequestParam String text) {
         return itemService.searchItems(text);
     }
+
     @PostMapping("/{itemId}/comment")
     @ResponseStatus(HttpStatus.CREATED)
     public CommentDto addComment(@PathVariable Long itemId,
@@ -53,8 +54,6 @@ public class ItemController {
                                  @Valid @RequestBody CommentDto commentDto) {
         return itemService.addComment(itemId, userId, commentDto);
     }
-
-
 
 
 }
