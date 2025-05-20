@@ -34,6 +34,11 @@
 			<optional>true</optional>
 		</dependency>
 
+		<!-- Добавленные зависимости для JPA и PostgreSQL -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>org.postgresql</groupId>
 			<artifactId>postgresql</artifactId>

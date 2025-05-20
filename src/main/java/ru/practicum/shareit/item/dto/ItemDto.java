@@ -5,8 +5,8 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import lombok.Getter;
+import ru.practicum.shareit.booking.dto.BookingInfo;
 import ru.practicum.shareit.user.dto.UserDto;
-
 
 @Data
 @Builder
@@ -25,4 +25,7 @@ public class ItemDto {
 
     private UserDto owner;
     private Long requestId;
+
+    private BookingInfo lastBooking;
+    private BookingInfo nextBooking;
 }
