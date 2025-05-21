@@ -1,15 +1,19 @@
 package ru.practicum.shareit.item.dto;
 
+import jakarta.persistence.OneToMany;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
 import ru.practicum.shareit.booking.dto.BookingInfo;
+import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.user.dto.UserDto;
+
+import java.util.List;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class ItemDto {
     private Long id;
 
@@ -28,4 +32,6 @@ public class ItemDto {
 
     private BookingInfo lastBooking;
     private BookingInfo nextBooking;
+    @OneToMany(mappedBy = "item")
+    private List<CommentDto> comments;
 }

@@ -3,6 +3,8 @@ package ru.practicum.shareit.mapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.Collections;
+
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
@@ -12,8 +14,11 @@ public class ItemMapper {
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
-                // Предполагается, что UserMapper уже существует
                 .owner(item.getOwner() != null ? UserMapper.toUserDto(item.getOwner()) : null)
+                .requestId(null)
+                .comments(Collections.emptyList())
+                .lastBooking(null)
+                .nextBooking(null)
                 .build();
     }
 
