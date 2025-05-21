@@ -92,8 +92,11 @@ public class ItemServiceImpl implements ItemService {
         if (text == null || text.isBlank()) {
             return List.of();
         }
-
         List<Item> items = itemRepository.search(text);
+        // Фильтруем, оставляя только вещи, доступные для бронирования
+        items = items.stream()
+                .filter(Item::getAvailable)
+                .collect(Collectors.toList());
         return items.stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
