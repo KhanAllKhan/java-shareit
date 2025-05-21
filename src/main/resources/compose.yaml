@@ -1,0 +1,61 @@
+services:
+  db:
+    image: postgres:16.1
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./volumes/postgres:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=later
+      - POSTGRES_USER=dbuser
+      - POSTGRES_PASSWORD=12345
+    healthcheck:
+      test: pg_isready -q -d $$POSTGRES_DB -U $$POSTGRES_USER
+      timeout: 5s
+      interval: 5s
+      retries: 10
+
+  db-init:
+    image: postgres:16.1
+    container_name: db-init
+    depends_on:
+      db:
+        condition: service_healthy
+    entrypoint:
+      - bash
+      - -c
+      - |
+        set -e
+        psql postgresql://dbuser:12345@db:5432/later -v ON_ERROR_STOP=1 <<-EOSQL
+        CREATE TABLE IF NOT EXISTS users (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          email varchar(320),
+          first_name varchar(100),
+          last_name varchar(100),
+          registration_date TIMESTAMP,
+          state varchar(50)
+        );
+        
+        CREATE TABLE IF NOT EXISTS items (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          user_id BIGINT,
+          url VARCHAR(1000),
+          CONSTRAINT fk_items_to_users FOREIGN KEY(user_id) REFERENCES users(id),
+          UNIQUE(id, url)
+        );
+        
+        CREATE TABLE IF NOT EXISTS tags (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          item_id BIGINT,
+          name VARCHAR(50),
+          CONSTRAINT fk_tags_to_items FOREIGN KEY(item_id) REFERENCES items(id)
+        );
+        CREATE TABLE IF NOT EXISTS item_notes (
+          id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+          item_id BIGINT,
+          text VARCHAR(1000),
+          note_date timestamp,
+          CONSTRAINT items FOREIGN KEY(item_id) REFERENCES items(id)
+        );
+        EOSQL
