@@ -26,17 +26,25 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(Long userId, BookingDto bookingDto) {
-        // Получаем книгуещего (booker)
+        // Проверяем, что объект ItemDto в BookingDto не `null`
+        if (bookingDto.getItem() == null) {
+            throw new IllegalArgumentException("В bookingDto отсутствует информация о предмете бронирования");
+        }
+
+        // Получаем пользователя
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
         // Проверяем, что вещь существует
         Item item = itemRepository.findById(bookingDto.getItem().getId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
-        // Если владелец пытается бронировать свою вещь – выбрасываем ошибку
+
+        // Проверяем, что владелец не бронирует свою же вещь
         if (item.getOwner().getId().equals(userId)) {
             throw new IllegalArgumentException("Владелец вещи не может бронировать собственную вещь");
         }
-        // Устанавливаем статус и сохраняем бронирование
+
+        // Создаём объект Booking
         Booking booking = Booking.builder()
                 .start(bookingDto.getStart())
                 .end(bookingDto.getEnd())
@@ -44,10 +52,11 @@ public class BookingServiceImpl implements BookingService {
                 .booker(booker)
                 .status(Status.WAITING)
                 .build();
+
         Booking savedBooking = bookingRepository.save(booking);
-        // Здесь выполните маппинг сущности в DTO
         return BookingMapper.toBookingDto(savedBooking);
     }
+
 
     @Override
     public BookingDto updateBookingStatus(Long bookingId, Long userId, boolean approved) {
