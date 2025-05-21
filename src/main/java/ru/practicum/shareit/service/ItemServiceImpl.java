@@ -47,7 +47,7 @@ public class ItemServiceImpl implements ItemService {
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
         if (!item.getOwner().getId().equals(ownerId)) {
-            return ItemMapper.toItemDto(item); // Возвращаем текущий объект без изменений
+            throw new NotFoundException("Вещь не найдена");
         }
 
         if (itemDto.getName() != null) {
@@ -62,6 +62,7 @@ public class ItemServiceImpl implements ItemService {
         Item updatedItem = itemRepository.save(item);
         return ItemMapper.toItemDto(updatedItem);
     }
+
 
     @Override
     public ItemDto getItemById(Long itemId) {
