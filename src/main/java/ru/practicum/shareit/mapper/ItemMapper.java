@@ -5,7 +5,6 @@ import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collections;
 
-
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
         if (item == null) return null;
@@ -16,6 +15,7 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .owner(item.getOwner() != null ? UserMapper.toUserDto(item.getOwner()) : null)
                 .requestId(null)
+                // Если у Item нет связи с комментариями, возвращаем пустой список
                 .comments(Collections.emptyList())
                 .lastBooking(null)
                 .nextBooking(null)
