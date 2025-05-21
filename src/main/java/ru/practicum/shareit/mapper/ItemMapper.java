@@ -2,7 +2,6 @@ package ru.practicum.shareit.mapper;
 
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-
 import java.util.Collections;
 
 public class ItemMapper {
