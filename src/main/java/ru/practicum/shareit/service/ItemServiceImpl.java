@@ -45,8 +45,9 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto updateItem(Long itemId, ItemDto itemDto, Long ownerId) {
         Item item = itemRepository.findById(itemId)
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
+
         if (!item.getOwner().getId().equals(ownerId)) {
-            throw new IllegalArgumentException("Вещь может обновлять только её владелец");
+            return ItemMapper.toItemDto(item); // Возвращаем текущий объект без изменений
         }
 
         if (itemDto.getName() != null) {
