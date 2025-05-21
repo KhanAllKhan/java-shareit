@@ -107,8 +107,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public List<BookingDto> getBookingsForOwner(Long ownerId, String state, int from, int size) {
-        // Получаем все бронирования для вещей владельца
-        List<Booking> bookings = bookingRepository.findAllByItem_Owner_Id(ownerId, Sort.by(Sort.Direction.DESC, "start"));
+        // Проверяем, что пользователь с таким ownerId существует. Если нет – выбрасываем исключение.
+        userRepository.findById(ownerId)
+                .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
+
+        // Если пользователь существует, получаем бронирования для всех его вещей
+        List<Booking> bookings = bookingRepository.findAllByItem_Owner_Id(ownerId,
+                Sort.by(Sort.Direction.DESC, "start"));
         return BookingMapper.toBookingDtoList(bookings);
     }
+
 }
