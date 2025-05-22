@@ -3,6 +3,7 @@ package ru.practicum.shareit.mapper;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import java.util.Collections;
+import java.util.stream.Collectors;
 
 public class ItemMapper {
     public static ItemDto toItemDto(Item item) {
@@ -14,8 +15,11 @@ public class ItemMapper {
                 .available(item.getAvailable())
                 .owner(item.getOwner() != null ? UserMapper.toUserDto(item.getOwner()) : null)
                 .requestId(null)
-                // Если у Item нет связи с комментариями, возвращаем пустой список
-                .comments(Collections.emptyList())
+                .comments(item.getComments() != null
+                        ? item.getComments().stream()
+                        .map(CommentMapper::toCommentDto)
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
                 .lastBooking(null)
                 .nextBooking(null)
                 .build();

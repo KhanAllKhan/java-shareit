@@ -26,30 +26,24 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto createBooking(Long userId, BookingDto bookingDto) {
-        // Проверяем, что bookingDto содержит itemId
         if (bookingDto.getItemId() == null) {
             throw new IllegalArgumentException("В bookingDto отсутствует информация о предмете бронирования");
         }
 
-        // Получаем пользователя (booker)
         User booker = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
 
-        // Находим вещь по itemId
         Item item = itemRepository.findById(bookingDto.getItemId())
                 .orElseThrow(() -> new NotFoundException("Вещь не найдена"));
 
-        // Проверяем, что владелец не бронирует свою вещь
         if (item.getOwner().getId().equals(userId)) {
             throw new IllegalArgumentException("Владелец вещи не может бронировать собственную вещь");
         }
 
-        // **Новая проверка: если вещь недоступна для бронирования, выбрасываем исключение**
         if (!item.getAvailable()) {
             throw new IllegalArgumentException("Вещь не доступна для бронирования");
         }
 
-        // Создаём объект Booking
         Booking booking = Booking.builder()
                 .start(bookingDto.getStart())
                 .end(bookingDto.getEnd())
@@ -68,7 +62,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto updateBookingStatus(Long bookingId, Long userId, boolean approved) {
-        // Получаем бронирование
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new NotFoundException("Бронирование не найдено"));
         if (!booking.getItem().getOwner().getId().equals(userId)) {

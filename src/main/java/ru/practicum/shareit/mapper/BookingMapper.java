@@ -43,7 +43,6 @@ public class BookingMapper {
                 .start(bookingDto.getStart())
                 .end(bookingDto.getEnd())
                 .status(Status.valueOf(bookingDto.getStatus()))
-                // Здесь можно добавить преобразование item и booker, если DTO содержит всю необходимую информацию
                 .build();
     }
 
