@@ -3,6 +3,7 @@ package ru.practicum.shareit.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.dto.BookingInfo;
 import ru.practicum.shareit.comment.Comment;
@@ -103,6 +104,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
 
+    @Transactional
+    @Override
     public CommentDto addComment(Long itemId, Long userId, CommentDto commentDto) {
         List<Booking> pastBookings = bookingRepository.findByBooker_IdAndItem_IdAndEndBefore(
                 userId, itemId, LocalDateTime.now(), Sort.by(Sort.Direction.ASC, "end")
@@ -124,7 +127,6 @@ public class ItemServiceImpl implements ItemService {
         Comment savedComment = commentRepository.save(comment);
         return CommentMapper.toCommentDto(savedComment);
     }
-
 
 
     private BookingInfo getLastBookingInfo(Long itemId) {

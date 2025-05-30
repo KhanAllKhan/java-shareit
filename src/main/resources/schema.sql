@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS items (
     description TEXT NOT NULL,
     is_available BOOLEAN NOT NULL,
     owner_id INTEGER REFERENCES users(id),
-    request_id INTEGER  -- если используется связь с запросами, можно добавить FOREIGN KEY
+    request_id INTEGER
 );
 
 -- Таблица запросов (если используется)
