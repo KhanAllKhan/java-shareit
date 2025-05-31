@@ -1,7 +1,7 @@
 package ru.practicum.shareit.booking.dto;
 
 import lombok.*;
-
+// для отправки
 @ToString
 @Getter
 @Setter
