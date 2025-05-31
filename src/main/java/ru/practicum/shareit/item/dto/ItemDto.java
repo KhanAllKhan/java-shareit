@@ -8,7 +8,10 @@ import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.user.dto.UserDto;
 import java.util.List;
 
-@Data
+@ToString
+@Getter
+@Setter
+@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

@@ -11,7 +11,10 @@ import java.util.List;
 
 @Entity
 @Table(name = "items")
-@Data
+@ToString
+@Setter
+@Getter
+@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

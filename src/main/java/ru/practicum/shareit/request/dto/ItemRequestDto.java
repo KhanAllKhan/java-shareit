@@ -3,7 +3,9 @@ package ru.practicum.shareit.request.dto;
 import lombok.*;
 import java.time.LocalDateTime;
 
-@Data
+@ToString
+@Getter
+@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor

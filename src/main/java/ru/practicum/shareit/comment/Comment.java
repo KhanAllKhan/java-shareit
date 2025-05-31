@@ -2,17 +2,16 @@ package ru.practicum.shareit.comment;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comments")
-@Data
+@ToString
+@Getter
+@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
