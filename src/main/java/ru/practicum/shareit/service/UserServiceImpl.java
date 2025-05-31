@@ -2,6 +2,7 @@ package ru.practicum.shareit.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.exception.DuplicateEmailException;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.mapper.UserMapper;
 import ru.practicum.shareit.repository.UserRepository;
@@ -9,6 +10,7 @@ import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,16 +32,29 @@ public class UserServiceImpl implements UserService {
     public UserDto updateUser(Long userId, UserDto userDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден"));
-        // Обновляем только непустые поля
+
+        // Обновляем имя, если оно задано
         if (userDto.getName() != null) {
             user.setName(userDto.getName());
         }
+
+        // Обновляем email, если он задан
         if (userDto.getEmail() != null) {
-            user.setEmail(userDto.getEmail());
+            // Если email изменился (новый email не совпадает с текущим)
+            if (!userDto.getEmail().equals(user.getEmail())) {
+                // Проверяем, не используется ли новый email другим пользователем
+                Optional<User> userByEmail = userRepository.findByEmail(userDto.getEmail());
+                if (userByEmail.isPresent() && !userByEmail.get().getId().equals(userId)) {
+                    throw new DuplicateEmailException("Email " + userDto.getEmail() + " уже используется.");
+                }
+                user.setEmail(userDto.getEmail());
+            }
         }
+
         User updatedUser = userRepository.save(user);
         return UserMapper.toUserDto(updatedUser);
     }
+
 
     @Override
     public UserDto getUserById(Long userId) {
