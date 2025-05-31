@@ -9,6 +9,7 @@ import ru.practicum.shareit.repository.UserRepository;
 
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.dto.UserDto;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,7 +24,7 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto userDto) {
 
         Optional<User> existingUser = userRepository.findByEmail(userDto.getEmail());
-        if(existingUser.isPresent()){
+        if (existingUser.isPresent()) {
 
             throw new DuplicateEmailException("Пользователь с email " + userDto.getEmail() + " уже существует.");
         }
