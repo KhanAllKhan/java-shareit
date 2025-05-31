@@ -21,12 +21,19 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto createUser(UserDto userDto) {
-        // Преобразование DTO в сущность и сохранение
+
+        Optional<User> existingUser = userRepository.findByEmail(userDto.getEmail());
+        if(existingUser.isPresent()){
+
+            throw new DuplicateEmailException("Пользователь с email " + userDto.getEmail() + " уже существует.");
+        }
+
+        // Если пользователя с таким email нет, создаём нового
         User user = UserMapper.toUser(userDto);
         User savedUser = userRepository.save(user);
-        // Преобразование сохраненной сущности в DTO
         return UserMapper.toUserDto(savedUser);
     }
+
 
     @Override
     public UserDto updateUser(Long userId, UserDto userDto) {
@@ -40,9 +47,7 @@ public class UserServiceImpl implements UserService {
 
         // Обновляем email, если он задан
         if (userDto.getEmail() != null) {
-            // Если email изменился (новый email не совпадает с текущим)
             if (!userDto.getEmail().equals(user.getEmail())) {
-                // Проверяем, не используется ли новый email другим пользователем
                 Optional<User> userByEmail = userRepository.findByEmail(userDto.getEmail());
                 if (userByEmail.isPresent() && !userByEmail.get().getId().equals(userId)) {
                     throw new DuplicateEmailException("Email " + userDto.getEmail() + " уже используется.");
