@@ -1,40 +1,37 @@
 package ru.practicum.shareit.mapper;
 
-import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.service.UserService;
-import ru.practicum.shareit.user.User;
+import java.util.Collections;
+import java.util.stream.Collectors;
 
-@Component
-@RequiredArgsConstructor
 public class ItemMapper {
-    private final UserService userService;
-    private final UserMapper userMapper; // Добавляем зависимость
-
-    public ItemDto toItemDto(Item item) {
+    public static ItemDto toItemDto(Item item) {
+        if (item == null) return null;
         return ItemDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
-                .available(item.isAvailable())
-                .owner(item.getOwner() != null ? userMapper.toUserDto(item.getOwner()) : null)
-                .requestId(item.getRequest() != null ? item.getRequest().getId() : null)
+                .available(item.getAvailable())
+                .owner(item.getOwner() != null ? UserMapper.toUserDto(item.getOwner()) : null)
+                .requestId(null)
+                .comments(item.getComments() != null
+                        ? item.getComments().stream()
+                        .map(CommentMapper::toCommentDto)
+                        .collect(Collectors.toList())
+                        : Collections.emptyList())
+                .lastBooking(null)
+                .nextBooking(null)
                 .build();
     }
 
-    public Item toItem(ItemDto itemDto) {
-        User owner = itemDto.getOwner() != null
-                ? userService.getUserEntity(itemDto.getOwner().getId())
-                : null;
-
+    public static Item toItem(ItemDto itemDto) {
+        if (itemDto == null) return null;
         return Item.builder()
                 .id(itemDto.getId())
                 .name(itemDto.getName())
                 .description(itemDto.getDescription())
                 .available(itemDto.getAvailable())
-                .owner(owner)
                 .build();
     }
 }
