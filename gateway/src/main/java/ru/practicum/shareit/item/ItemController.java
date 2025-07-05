@@ -6,13 +6,13 @@ import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.client.ItemClient;
 import ru.practicum.shareit.dto.CommentDto;
 import ru.practicum.shareit.dto.ItemDto;
 
-@Controller
+@RestController
 @RequestMapping(path = "/items")
 @RequiredArgsConstructor
 @Slf4j
@@ -60,10 +60,10 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public ResponseEntity<Object> addComment(@RequestHeader("X-Sharer-User-Id") Long authorId,
-                                             @PathVariable("itemId") Long itemId,
-                                             @RequestBody @Valid CommentDto commentDto) {
-        log.info("Adding comment to item {}, authorId={}", itemId, authorId);
+    public ResponseEntity<Object> addComment(
+            @RequestHeader("X-Sharer-User-Id") Long authorId,
+            @PathVariable("itemId") Long itemId,
+            @RequestBody @Valid CommentDto commentDto) {
         return itemClient.addComment(authorId, itemId, commentDto);
     }
 }
