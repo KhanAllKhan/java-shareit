@@ -1,7 +1,7 @@
 package ru.practicum.shareit.mapper;
 
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.dto.BookingDto;
 import ru.practicum.shareit.status.Status;
 
 

@@ -13,7 +13,7 @@ import ru.practicum.shareit.repository.ItemRepository;
 import ru.practicum.shareit.repository.UserRepository;
 import ru.practicum.shareit.status.Status;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.dto.BookingDto;
 import ru.practicum.shareit.exception.NotFoundException;
 
 

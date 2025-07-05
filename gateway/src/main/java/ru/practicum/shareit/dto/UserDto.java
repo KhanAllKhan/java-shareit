@@ -1,4 +1,4 @@
-package ru.practicum.shareit.user.dto;
+package ru.practicum.shareit.dto;
 
 
 import jakarta.validation.constraints.Email;
@@ -7,6 +7,7 @@ import lombok.*;
 
 @ToString
 @Getter
+@Setter
 @EqualsAndHashCode
 @Builder
 public class UserDto {

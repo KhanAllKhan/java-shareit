@@ -5,17 +5,18 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.comment.Comment;
-import ru.practicum.shareit.comment.dto.CommentDto;
 import ru.practicum.shareit.dto.BookingInfo;
+import ru.practicum.shareit.comment.Comment;
+
+
+import ru.practicum.shareit.dto.CommentDto;
 import ru.practicum.shareit.exception.NotFoundException;
 import ru.practicum.shareit.item.Item;
+import ru.practicum.shareit.dto.ItemDto;
 import ru.practicum.shareit.mapper.CommentMapper;
 import ru.practicum.shareit.mapper.ItemMapper;
 import ru.practicum.shareit.repository.*;
 import ru.practicum.shareit.user.User;
-
-import ru.practicum.shareit.item.dto.ItemDto;
 
 
 import java.time.LocalDateTime;

@@ -1,14 +1,11 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.dto;
 
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
+import ru.practicum.shareit.booking.BookingInfo;
 
-
-import ru.practicum.shareit.comment.dto.CommentDto;
-import ru.practicum.shareit.dto.BookingInfo;
-import ru.practicum.shareit.user.dto.UserDto;
 
 import java.util.List;
 

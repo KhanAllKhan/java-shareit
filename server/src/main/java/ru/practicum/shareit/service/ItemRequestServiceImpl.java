@@ -7,8 +7,8 @@ import ru.practicum.shareit.mapper.ItemRequestMapper;
 import ru.practicum.shareit.repository.ItemRequestRepository;
 import ru.practicum.shareit.request.ItemRequest;
 
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-import ru.practicum.shareit.request.dto.ItemResponseDto;
+import ru.practicum.shareit.dto.ItemRequestDto;
+import ru.practicum.shareit.dto.ItemResponseDto;
 import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.repository.ItemRepository;
 import ru.practicum.shareit.repository.UserRepository;

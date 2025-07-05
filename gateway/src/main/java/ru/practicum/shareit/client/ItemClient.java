@@ -1,7 +1,8 @@
 package ru.practicum.shareit.client;
 
-import ru.practicum.shareit.comment.dto.CommentDto;
-import ru.practicum.shareit.item.dto.ItemDto;
+
+import ru.practicum.shareit.dto.CommentDto;
+import ru.practicum.shareit.dto.ItemDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.ResponseEntity;

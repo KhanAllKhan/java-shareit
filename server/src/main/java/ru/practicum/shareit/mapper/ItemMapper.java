@@ -1,7 +1,7 @@
 package ru.practicum.shareit.mapper;
 
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.dto.ItemDto;
 
 import java.util.Collections;
 import java.util.stream.Collectors;

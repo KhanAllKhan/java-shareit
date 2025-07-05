@@ -2,7 +2,8 @@ package ru.practicum.shareit.mapper;
 
 
 import ru.practicum.shareit.comment.Comment;
-import ru.practicum.shareit.comment.dto.CommentDto;
+import ru.practicum.shareit.dto.CommentDto;
+
 
 public class CommentMapper {
     public static CommentDto toCommentDto(Comment comment) {
