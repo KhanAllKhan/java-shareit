@@ -5,15 +5,20 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.client.ItemClient;
 import ru.practicum.shareit.dto.CommentDto;
 import ru.practicum.shareit.dto.ItemDto;
 
+import java.util.Collection;
+import java.util.Map;
+
 @RestController
-@RequestMapping(path = "/items")
+@RequestMapping("/items")
 @RequiredArgsConstructor
 @Slf4j
 @Validated
@@ -22,39 +27,58 @@ public class ItemController {
     private final ItemClient itemClient;
 
     @PostMapping
-    public ResponseEntity<Object> addItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                          @RequestBody @Valid ItemDto itemDto) {
+    public ResponseEntity<Object> addItem(
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @RequestBody @Valid ItemDto itemDto) {
         log.info("Creating item {}, ownerId={}", itemDto, ownerId);
         return itemClient.createItem(ownerId, itemDto);
     }
 
     @PatchMapping("/{itemId}")
-    public ResponseEntity<Object> patchItem(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                            @PathVariable("itemId") Long itemId,
-                                            @RequestBody @Valid ItemDto itemDto) {
+    public ResponseEntity<Object> patchItem(
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @PathVariable("itemId") Long itemId,
+            @RequestBody @Valid ItemDto itemDto) {
         log.info("Updating item {}, ownerId={}", itemId, ownerId);
         return itemClient.updateItem(ownerId, itemId, itemDto);
     }
 
     @GetMapping("/{itemId}")
-    public ResponseEntity<Object> getItemById(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                              @PathVariable("itemId") Long itemId) {
+    public ResponseEntity<Object> getItemById(
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @PathVariable("itemId") Long itemId) {
         log.info("Getting item {}, ownerId={}", itemId, ownerId);
-        return itemClient.getItem(ownerId, itemId);
+        ResponseEntity<Object> response = itemClient.getItem(ownerId, itemId);
+
+        // Проверяем, что ответ 2xx и тело — Map
+        if (response.getStatusCode().is2xxSuccessful()
+                && response.getBody() instanceof Map<?, ?> bodyMap) {
+            Object commentsObj = bodyMap.get("comments");
+            if (commentsObj instanceof Collection<?> comments && comments.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "У вещи с id=" + itemId + " нет комментариев"
+                );
+            }
+        }
+
+        return response;
     }
 
     @GetMapping
-    public ResponseEntity<Object> getUserItems(@RequestHeader("X-Sharer-User-Id") Long ownerId,
-                                               @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                               @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+    public ResponseEntity<Object> getUserItems(
+            @RequestHeader("X-Sharer-User-Id") Long ownerId,
+            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Getting items for ownerId={}, from={}, size={}", ownerId, from, size);
         return itemClient.getUserItems(ownerId, from, size);
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> getSearch(@RequestParam(name = "text") String text,
-                                            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
-                                            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
+    public ResponseEntity<Object> getSearch(
+            @RequestParam(name = "text") String text,
+            @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") Integer from,
+            @Positive @RequestParam(name = "size", defaultValue = "10") Integer size) {
         log.info("Searching items with text '{}', from={}, size={}", text, from, size);
         return itemClient.searchItems(text, from, size);
     }
