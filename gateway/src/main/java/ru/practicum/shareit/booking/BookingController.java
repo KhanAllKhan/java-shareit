@@ -5,7 +5,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 import ru.practicum.shareit.dto.BookItemRequestDto;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/bookings")
@@ -53,6 +56,21 @@ public class BookingController {
             @RequestParam(defaultValue = "ALL") String state,
             @RequestParam(defaultValue = "0") int from,
             @RequestParam(defaultValue = "10") int size) {
-        return bookingClient.getBookings(userId, BookingState.valueOf(state.toUpperCase()), from, size);
+
+        ResponseEntity<Object> response = bookingClient
+                .getBookings(userId, BookingState.valueOf(state.toUpperCase()), from, size);
+
+        // Если успешный ответ и тело — пустой список, кидаем 500
+        if (response.getStatusCode().is2xxSuccessful()) {
+            Object body = response.getBody();
+            if (body instanceof List<?> list && list.isEmpty()) {
+                throw new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR,
+                        "У пользователя с id=" + userId + " нет броней"
+                );
+            }
+        }
+
+        return response;
     }
 }
