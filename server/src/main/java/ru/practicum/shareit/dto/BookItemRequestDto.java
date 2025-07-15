@@ -2,8 +2,7 @@ package ru.practicum.shareit.dto;
 
 import java.time.LocalDateTime;
 
-import jakarta.validation.constraints.Future;
-import jakarta.validation.constraints.FutureOrPresent;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -13,8 +12,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class BookItemRequestDto {
     private long itemId;
-    @FutureOrPresent
+
     private LocalDateTime start;
-    @Future
+
     private LocalDateTime end;
 }

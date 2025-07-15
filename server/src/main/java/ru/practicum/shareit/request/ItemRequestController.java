@@ -1,8 +1,5 @@
 package ru.practicum.shareit.request;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.PositiveOrZero;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -22,15 +19,15 @@ public class ItemRequestController {
     @PostMapping
     public ItemRequestDto createRequest(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @Valid @RequestBody ItemRequestDto requestDto) {
+            @RequestBody ItemRequestDto requestDto) {
         return requestService.createRequest(userId, requestDto);
     }
 
     @GetMapping
     public List<ItemRequestDto> getOwnRequests(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-            @Positive @RequestParam(defaultValue = "10") int size) {
+             @RequestParam(defaultValue = "0") int from,
+             @RequestParam(defaultValue = "10") int size) {
 
         return requestService.getOwnRequests(userId, from, size);
     }
@@ -38,8 +35,8 @@ public class ItemRequestController {
     @GetMapping("/all")
     public List<ItemRequestDto> getOtherUsersRequests(
             @RequestHeader("X-Sharer-User-Id") Long userId,
-            @PositiveOrZero @RequestParam(defaultValue = "0") int from,
-            @Positive @RequestParam(defaultValue = "10") int size) {
+            @RequestParam(defaultValue = "0") int from,
+           @RequestParam(defaultValue = "10") int size) {
 
         return requestService.getOtherUsersRequests(userId, from, size);
     }
