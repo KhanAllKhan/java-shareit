@@ -3,9 +3,11 @@ package ru.practicum.shareit.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.dto.ItemRequestDto;
 import ru.practicum.shareit.dto.ItemResponseDto;
 import ru.practicum.shareit.exception.NotFoundException;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.mapper.ItemRequestMapper;
 import ru.practicum.shareit.repository.ItemRequestRepository;
 import ru.practicum.shareit.repository.ItemRepository;
@@ -25,6 +27,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ItemRequestDto createRequest(Long userId, ItemRequestDto requestDto) {
         var user = userRepository.findById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь не найден id=" + userId));
@@ -40,6 +43,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemRequestDto> getOwnRequests(Long userId, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден id=" + userId);
@@ -53,6 +57,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public List<ItemRequestDto> getOtherUsersRequests(Long userId, int from, int size) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден id=" + userId);
@@ -66,6 +71,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public ItemRequestDto getRequestById(Long requestId, Long userId) {
         if (!userRepository.existsById(userId)) {
             throw new NotFoundException("Пользователь не найден id=" + userId);
@@ -87,7 +93,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         return dto;
     }
 
-    // Вспомогательный метод для маппинга списка запросов в DTO с ответами
     private List<ItemRequestDto> mapToDtoWithResponses(List<ItemRequest> requests) {
         return requests.stream()
                 .map(req -> {
